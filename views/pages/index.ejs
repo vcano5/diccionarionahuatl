@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<title>DICCIONARIO NAHUATL</title>
+	<%- include ('../partials/head.ejs') -%>
+	<meta property="og:title" content="Diccionario Nahuatl">
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="https://nahuatl.vcano5.com/">
+	<meta property="og:description" content="Diccionario etimologico Español-Nahuatl">
+	<meta property="og:site_name" content="VCANO5">
+	<meta property="image" content="https://image.flaticon.com/icons/svg/207/207127.svg">
+
+</head>
+<body >
+
+	<!-- style="background-color: #343a40" 343a40 -->
+
+	<div class="container text-center jumbotron" id="b" style="background-color: transparent;">
+		<div id="contenedor-alertas" class="alert alert-danger" style="display: none;" role="alert"></div>
+
+		<img class="img-fluid" src="https://image.flaticon.com/icons/svg/207/207127.svg" width="30%"> 
+		<h1 class="display-4 text-light">NAHUATL</h1>
+
+		
+		<!--
+		<div class="input-group input-group-lg vw-100 text-center">
+			<input type="search" name="busqueda" class="w-50" placeholder="Buscar un dios">
+			<button class="btn btn-primary ml-sm-2">a</button>
+		</div>
+		-->
+
+		<button type="button" class="btn btn-primary my-4 btn-lg shadow-sm" onclick="location.href = '/formulario'" style="border-radius: 10%"><i class="fa fa-plus" aria-hidden="true"></i> AÑADIR</button>
+		
+		<br>
+		<br>
+		<button type="button" class="w-auto btn btn btn-outline-secondary mr-sm-1 my-1  shadow-sm text-light" onclick="location.href = '/palabras'" style="border-radius: 1%"><i class="fa fa-id-card" style="color: lightgray" aria-hidden="true"></i> PALABRAS</button>
+		<br>
+		<button type="button" class="mt-4 w-auto btn btn btn-outline-dark my-1 mr-sm-1 shadow-sm text-light" onclick="location.href = '/registro'" style="border-radius: 1%"></i><span style="color: lightgray" class="fas fa-sign-in-alt"></span> REGISTRARSE</button>
+		<br>
+		<button type="button" class="w-auto btn btn btn-outline-dark my-1 mr-sm-1 shadow-sm text-light" onclick="location.href = '/login'" style="border-radius: 1%" style="color: red"><span style="color: lightgray" class="fa fa-user">  </span> INICIAR SESIÓN</button>		
+	</div>
+
+	<div class="fixed-bottom text-center" style="padding-bottom: 5px; align-self:  center;">
+		<a class="p-3 m-1" href='mailto:al195352@alumnos.uacj.mx?Subject=Dudas' ><i class="fa fa-envelope" style="color: #536976" aria-hidden="true"></i> </a>
+		<a class="p-3 m-1" href='https://www.facebook.com/Dicc.Nahuatl' ><i class="fab fa-facebook" style="color: #536976" aria-hidden="true"></i> </a>
+		<a class="p-3 m-1" href='https://m.me/Dicc.Nahuatl' ><i class="fab fa-facebook-messenger" style="color: #536976" aria-hidden="true"></i> </a>
+		<a class="p-3 m-1" href='https://github.com/vcano5' ><i class="fab fa-github" style="color: #536976" aria-hidden="true"></i> </a>
+	</div>
+	
+</body>
+</html>
