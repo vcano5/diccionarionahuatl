@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<title>Indice - Diccionario Nahuatl</title>
+	<%- include ('../partials/head.ejs') %>
+
+</head>
+<%- include ('../partials/header.ejs') %>
+<body>
+	<br>
+
+	<div class="wrapper">
+
+		<div class="container">
+			<p class="text-light display-4 text-break" style="text-align: center; font-size: 10vh;">
+			 	
+				<span class="lead text-muted" style="text-align: center; border-bottom: 0.5px solid darkgray"> DICCIONARIO</span>
+			</p> 
+			
+			<div class="jumbotron py-2 bg-light">
+				<form action="/busqueda" method="GET">
+			        <div class="input-group" style="padding-bottom: 8vh; padding-top: 3vh;">
+
+			          <input class="form-control pr-sm-1 w-90" id="inputbusqueda" name="n" type="search" placeholder="Busca un termino aqui" required>
+
+			          <button class="btn btn-info mx-2 my-sm-0 w-10" onclick="buscar()" style="background-color: orange; border: 0px;"><i class="fa fa-search"></i></button>
+			        </div>
+			    </form>
+	
+				<% letras.forEach(function(e) {%>
+					 
+				<button onclick='location.href = "/letra?letra=<%=e.letra%>"' class="btn btn-outline-dark"><%=e.letra%></button>
+				<%}) %>
+
+				<br>
+
+				
+	
+	</div>
+	</div>
+
+	</div>
+</body>
+</html>

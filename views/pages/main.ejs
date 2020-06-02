@@ -51,8 +51,8 @@
 	<%nahuatl.forEach(function(element){ %>
 		<div class="media">
 			<div class="media-body ml-sm-2" style="padding-left: 5%">
-				<h4 class="media-heading text-break"><a href="/clave?c=<%=element.clave%>"><%=element.espanol%><%=element.frase%></a></h4>
-				<span class="text-break"> <%=element.nahuatl%> por <a href="/publicaciones?matricula=<%=element.matricula%>"><%= element.matricula%></a></span>
+				<h4 class="media-heading text-break"><a href="/clave?c=<%=element.clave%>"><%=element.nahuatl%></a></h4>
+				<span class="text-break text-muted"> <%=element.espanol%><%=element.frase%> por <a class="text-white" href="/publicaciones?matricula=<%=element.matricula%>"><%= element.matricula%></a></span>
 			</div>
 		</div>
 		<br>

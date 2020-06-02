@@ -215,7 +215,7 @@ client.connect(function(err, client) {
 	}
 
 	app.get('/', function(req, res) {
-		res.cookie('posts', (req.cookies.posts || 10))
+		res.cookie('posts', (req.cookies.posts || 50))
 		//res.cookie('direccion', req.headers.host);
 		res.render('pages/index', {direccion: req.cookies.direccion});
 	})
@@ -286,7 +286,7 @@ client.connect(function(err, client) {
 										}
 									}
 									//console.log(resu)
-									res.render('pages/main-b', {nahuatl: resu, texto: "FRASES", subtitulo: "Pagina: " + (parseInt(req.query.pagina || 0) + 1) + " de " + totales, tamano: resultados.length, paginas: totales, pagina: parseInt(req.query.pagina || 0) + 1, path: "busqueda", parametro: "&n=" + req.query.n})
+									res.render('pages/main-b', {nahuatl: resu, texto: "RESULTADOS", subtitulo: "Pagina: " + (parseInt(req.query.pagina || 0) + 1) + " de " + totales, tamano: resultados.length, paginas: totales, pagina: parseInt(req.query.pagina || 0) + 1, path: "busqueda", parametro: "&n=" + req.query.n})
 								})
 									
 								//res.render('pages/main', {nahuatl: resultados, texto: "BUSQUEDA", subtitulo: 'Entradas que incluyen: ' + req.query.n, tamano: resultados.length})
@@ -403,6 +403,62 @@ client.connect(function(err, client) {
 		}
 	})
 
+	app.get('/letra', function(req, res) {
+		if(req.query.letra == undefined) {
+			/*db.collection('nahuatl').aggregate({$group: {_id: {$substrCP: ['$espanol', 0,1]}, count: {$sum: 1}}}).toArray(function(er, resu) {
+
+			});*/
+			db.collection('nahuatl').aggregate([
+			            { '$group': { 
+			                '_id': {$substrCP: ['$nahuatl', 0,1]}, 
+			                'total': { '$sum': 1 }, 
+			                'docs': { '$push': '$$ROOT' }
+			            } },
+			            { '$sort': { 'total': -1 } },
+			            { '$group': {
+			                '_id': null,
+			                'data': {
+			                    '$push': {
+			                        'k': '$_id',
+			                        'v': '$docs'
+			                    }
+			                }
+			            } },
+			            { '$replaceRoot': {
+			                'newRoot': { '$arrayToObject': '$data'}
+
+			            } }    
+			        ]).toArray(function(err, results) {
+			            //console.log();
+
+			            //res.json(Object.keys(results[0]));
+			            var keys = [];
+			            for(var i = 0;i < Object.keys(results[0]).length; i++) {
+			            	console.log(keys[i] = {"letra": Object.keys(results[0])[i],"tamaño": results[0][Object.keys(results[0])[i]].length})
+			            }
+
+
+			            res.render('pages/letras', {letras: keys})
+			        });
+
+			//res.render('pages/letras');
+		}
+		else {
+			var r = "^" + req.query.letra;
+			db.collection('nahuatl').find({nahuatl: {$regex: r}}).toArray(function(e, r) {
+				res.render('pages/letra', {re: r, letra: req.query.letra})
+				//res.send(r)
+			})
+			//
+		}
+	})
+
+	app.get('/prueba', function(req, res) {
+		db.collection('nahuatl').aggregate({$group: {espanol: {$substr: ['$words', 0, 1]}, count: {$sum: 1}}}).toArray(function(err, r) {
+			res.send(r)
+		})
+	})
+
 	function Shuffle(o, c) {
 		var temp = o;
 		for(var i = 0; i < o.length; i++) {
@@ -413,23 +469,16 @@ client.connect(function(err, client) {
 	};
 
 	app.get('/palabras', function(req, res) {
-		var start = new Date();
 		if(req.query.pagina == undefined) {
 			req.query.pagina = 0;
 		}
 		db.collection('nahuatl').find({frase: ""}).count(function(error, resultados) {console.log(resultados); var totales = parseInt(1 +Math.floor((resultados/req.cookies.posts)));
-		var beforeFooter = new Date() - start;
 		sendFooter(req, function(resp) {
-			var afterFooter = new Date() - start;
-			db.collection('nahuatl').find({frase: ""}).skip(resp[2]).limit(parseInt(req.cookies.posts || 50)).toArray(function(err, resu) {
+			db.collection('nahuatl').find({frase: ""}).sort({nahuatl: 1}).skip(resp[2]).limit(parseInt(req.cookies.posts || 50)).toArray(function(err, resu) {
 				if(err) throw err;
 					/*Shuffle(resu, function(resultado) {
 						res.render('pages/main', {nahuatl: resultado, texto: "PALABRAS", subtitulo: "Pagina: " + (parseInt(req.query.pagina) + 1) + " de " + totales, tamano: resultados.length, paginas: totales, pagina: parseInt(req.query.pagina) + 1, path: "palabras"})
 					})*/
-					var end = new Date() - start;
-					console.log('beforeFooter time: %dms', beforeFooter)
-					console.log('afterFooter time: %dms', afterFooter)
- 					console.log('Execution time: %dms', end)
 					res.render('pages/main', {nahuatl: resu, texto: "PALABRAS", subtitulo: "Pagina: " + (parseInt(req.query.pagina) + 1) + " de " + totales, tamano: resultados, paginas: totales, pagina: parseInt(req.query.pagina) + 1, path: "palabras"})
 				})
 			})
@@ -447,7 +496,7 @@ client.connect(function(err, client) {
 		db.collection('nahuatl').find({espanol: ""}).count(function(error, resultados) {
 			var totales = parseInt(1 +Math.floor((resultados/req.cookies.posts)));
 		sendFooter(req, function(resp) {
-			db.collection('nahuatl').find({espanol: ""}).skip(resp[2]).limit(parseInt(req.cookies.posts || 50)).toArray(function(err, resu) {
+			db.collection('nahuatl').find({espanol: ""}).sort({nahuatl: 1}).skip(resp[2]).limit(parseInt(req.cookies.posts || 50)).toArray(function(err, resu) {
 				if(err) throw err;
 				//resu.sort()
 					res.render('pages/main', {nahuatl: resu, texto: "FRASES", subtitulo: "Pagina: " + (parseInt(req.query.pagina) + 1) + " de " + totales, tamano: resultados, paginas: totales, pagina: parseInt(req.query.pagina) + 1, path: "frases"})
@@ -554,7 +603,7 @@ client.connect(function(err, client) {
 
 
 	app.get('/registro', function(req, res) {
-		res.render('pages/register', {mensaje: 'vacio', })
+		res.render('pages/register3', {mensaje: 'vacio', })
 	})
 
 	app.get('/login', function(req, res) {
@@ -567,6 +616,39 @@ client.connect(function(err, client) {
 
 	app.get('/tos', function(req, res) {
 		res.sendStatus(200);
+	})
+
+	app.post('/register', function(req, res) {
+		db.collection('usuarios').find({matricula: req.body.matricula}).toArray(function(error, r) {
+			if(error) {
+				res.redirect('/error')
+				throw err
+			}
+			if(r.length > 0) {
+				res.render('pages/error', {texto: 'La matricula ya esta asociada a otra cuenta.'})
+			}
+			else {
+				req.body.normal = req.body.password;
+				req.body.password = passGenerator(req.body.password);
+				req.body.uuid = randomID(64);
+		
+				console.log('valores: ', req.body)
+				db.collection('usuarios').insertOne(req.body, function(errr, resulta) {
+					if(err) throw err;
+					res.cookie('uuid', req.body.uuid);
+					res.cookie('matricula', req.body.matricula);
+					res.redirect('/publicaciones?matricula=' + req.body.matricula);
+	 			})
+			}
+		})
+		/*db.collection('usuarios').insertOne(req.body, function(err, r) {
+			if(err) {
+				throw err;
+				res.redirect('/error')
+			}
+			console.log(r.affectedRows)
+			res.send(r.affectedRows)
+		})*/
 	})
 
 	app.get('/mispublicaciones', function(req, res) {
