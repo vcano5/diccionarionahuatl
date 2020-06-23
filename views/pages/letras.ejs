@@ -29,7 +29,7 @@
 	
 				<% letras.forEach(function(e) {%>
 					 
-				<button onclick='location.href = "/letra?letra=<%=e.letra%>"' class="btn btn-outline-dark"><%=e.letra%></button>
+				<button onclick='location.href = "/letra?letra=<%=e.uri%>"' class="btn btn-outline-dark m-1"><%=e.letra%> <span class="badge badge-dark"><%=e.tamaño%></span></button>
 				<%}) %>
 
 				<br>

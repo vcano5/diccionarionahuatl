@@ -11,7 +11,7 @@
 	<div class="wrapper">
 
 		<div class="container" style="padding-top: 3vh">
-			<span class="text-white" style="font-size: 3vh;">Palabras que inician con <span id="xd" style="font-size: 5vh"></span></span>
+			<span class="text-white" style="font-size: 3vh;"><%=tamaño%> Palabras que inician con <span id="xd" style="font-size: 5vh"></span></span>
 			<% re.forEach(function(e) { %>
 			<div class="text-white" style="padding-bottom: 1vh;">
 				<a href="/clave?c=<%=e.clave%>"><%=e.nahuatl%></a> <%=e.espanol%> <%=e.frase%>

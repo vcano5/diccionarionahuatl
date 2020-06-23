@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <title>Formulario - Diccionario Nahuatl</title>
     <%- include ('../partials/head') -%>
 </head>
 
 <header>
     <%- include ('../partials/header') -%>
 </header>
-<body>
+<body class="text-white">
 
   <div class="container">
     <br><br>
@@ -23,9 +24,9 @@
       </td>
     </tr>
     <tr>
-      <td>Matricula: </td>
+      <td>Matricula: <span class="requerido"></td>
       <td>
-        <input type="number" name="matricula">
+        <input type="number" name="matricula" value="" required>
         </td>
     </tr>
       <tr>
@@ -46,23 +47,21 @@
     <tr id="frasetr" style="display:none;">
       <td>Frase <span class="requerido"></td>
       <td>
-        <input type="text" name="frase" id="frase" placeholder=""> 
+        <input type="text" name="frase" id="frase" value=""> 
       </td>
     </tr>
     <tr id="palabratr">
       <td>Palabra en Español <span class="requerido"></span></td>
-      <td colspan="2"><input type="text" name="espanol" id="espanol"  /></td>
+      <td colspan="2"><input type="text" name="espanol" value="" id="espanol"  /></td>
     </tr>
     <tr>
       <td>Palabra en Nahuatl <span class="requerido"></span></td>
-      <td colspan="2"><input type="text" name="nahuatl" id="nahuatl" required/></td>
+      <td colspan="2"><input type="text" value="" name="nahuatl" id="nahuatl" required/></td>
     </tr>
-    </tr>
-      <tr>
+    <tr>
       <td>&nbsp;</td>
       <td colspan="2">&nbsp;</td>
     </tr>
-
     <tr>
       <td colspan="2"><div align="center">
         <button type="reset" class="btn btn-danger">
@@ -84,8 +83,12 @@
         <!--<i class="fa fa-paper-plane" aria-hidden="true"></i><input class="btn btn-primary" type="submit" name="button2" id="button2" value="Enviar">   -->
       </div></td>
     </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td colspan="2">&nbsp;</td>
+    </tr>
   </table>
-  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade text-dark" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">

@@ -433,22 +433,143 @@ client.connect(function(err, client) {
 
 			            //res.json(Object.keys(results[0]));
 			            var keys = [];
+			            var tm = 0;
 			            for(var i = 0;i < Object.keys(results[0]).length; i++) {
-			            	console.log(keys[i] = {"letra": Object.keys(results[0])[i],"tamaño": results[0][Object.keys(results[0])[i]].length})
+			            	var rgx = new RegExp('^[A-Z]', 'i')
+			            	var x = Object.keys(results[0])[i];
+			            	var d = 0;
+			            	if(rgx.test(x)) {
+			            		//console.log("fierro: ", x)
+			            		//console.log(results[0][i])
+			            		keys[i] = {"letra": Object.keys(results[0])[i],"tamaño": results[0][Object.keys(results[0])[i]].length, "uri": encodeURIComponent(Object.keys(results[0])[i])}
+			            	}
+			            	else {
+			            		tm = tm + results[0][Object.keys(results[0])[i]].length;
+			            	}
+			            	//keys[i] = {"letra": "ñ","tamaño": results[0][Object.keys(results[0])[i]].length, "uri": encodeURIComponent(Object.keys(results[0])[i])}			       
 			            }
+			            keys.sort(function(a, b) {
+			            	return(a['letra'] > b['letra'] ? 1 : ((a['letra'] < b['letra']) ? -1 :0))
+			            })
+			            keys[keys.length] = {"letra": "EXTRA","tamaño": tm, "uri": 'EXTRA'}
 
-
+			            //res.json(keys)
 			            res.render('pages/letras', {letras: keys})
 			        });
 
 			//res.render('pages/letras');
 		}
 		else {
-			var r = "^" + req.query.letra;
-			db.collection('nahuatl').find({nahuatl: {$regex: r}}).toArray(function(e, r) {
-				res.render('pages/letra', {re: r, letra: req.query.letra})
-				//res.send(r)
-			})
+			var r = new RegExp("^" + req.query.letra ,"i");
+			if(req.query.letra == 'EXTRA') {
+				/*db.collection('nahuatl').aggregate([
+			            { '$group': { 
+			                '_id': {$substrCP: ['$nahuatl', 0,1]}, 
+			                'total': { '$sum': 1 }, 
+			                'docs': { '$push': '$$ROOT' }
+			            } },
+			            { '$sort': { 'total': -1 } },
+			            { '$group': {
+			                '_id': null,
+			                'data': {
+			                    '$push': {
+			                        'k': '$_id',
+			                        'v': '$docs'
+			                    }
+			                }
+			            } },
+			            { '$replaceRoot': {
+			                'newRoot': { '$arrayToObject': '$data'}
+
+			            } }    
+			        ]).toArray(function(err, results) {
+			        	//res.json(results)
+			        	var keys = [];
+			            for(var i = 0;i < Object.keys(results[0]).length; i++) {
+			            	var rgx = /[A-Z]/i;
+			            	var x = Object.keys(results[0])[i];
+			            	var d = 0;
+			            	if(!rgx.test(x)) {
+			            		//console.log("fierro: ", x)
+			            		//console.log(results[0][i])
+			            		keys[keys.length] = {"letra": Object.keys(results[0])[i],"tamaño": results[0][Object.keys(results[0])[i]].length, "uri": encodeURIComponent(Object.keys(results[0])[i])}
+			            	}
+			            	//keys[i] = {"letra": "ñ","tamaño": results[0][Object.keys(results[0])[i]].length, "uri": encodeURIComponent(Object.keys(results[0])[i])}			       
+			            }
+			            //res.json(keys)
+			            res.render('pages/extra', {re: keys, letra: 'EXTRA'});
+			        })*/
+			    db.collection('nahuatl').aggregate([
+			            { '$group': { 
+			                '_id': {$substrCP: ['$nahuatl', 0,1]}, 
+			                'total': { '$sum': 1 }, 
+			                'docs': { '$push': '$$ROOT' }
+			            } },
+			            { '$sort': { 'total': -1 } },
+			            { '$group': {
+			                '_id': null,
+			                'data': {
+			                    '$push': {
+			                        'k': '$_id',
+			                        'v': '$docs'
+			                    }
+			                }
+			            } },
+			            { '$replaceRoot': {
+			                'newRoot': { '$arrayToObject': '$data'}
+
+			            } }    
+			        ]).toArray(function(err, results) {
+			        	//res.json(results)
+			        	try {
+			        		var keys = [];
+				            for(var i = 0;i < Object.keys(results[0]).length; i++) {
+				            	var rgx = /[A-Z]/i;
+				            	var x = Object.keys(results[0])[i];
+				            	var d = 0;
+				            	if(!rgx.test(x)) {
+				            		//console.log("fierro: ", x)
+				            		//console.log(results[0][i])
+				            		keys[keys.length] = {"letra": Object.keys(results[0])[i],"tamaño": results[0][Object.keys(results[0])[i]].length, "uri": encodeURIComponent(Object.keys(results[0])[i])}
+				            	}
+				            	//keys[i] = {"letra": "ñ","tamaño": results[0][Object.keys(results[0])[i]].length, "uri": encodeURIComponent(Object.keys(results[0])[i])}			       
+				            }
+				            //res.json(keys)
+			        	}
+			        	catch (error){
+			        	}
+			        	try {
+			        		var j = [];
+				            for(var i = 0; i < keys.length; i++) {
+				            	var letra = keys[i].letra;
+				            	console.log(letra)
+				            	var r = new RegExp('^\\' + letra, 'i')
+				            	//console.log(letra)
+				            	db.collection('nahuatl').find({nahuatl: {$regex: r}}).toArray(function(e, r) {
+				            		if(err) {throw err};
+				            		console.log('Agregando: ', letra)
+				            		j[i] = r[0]
+				            		//if(i == 2) {console.log(r);j[i] = r;}
+				            	})
+				            }
+				            //console.log(j)
+				            res.json(keys);
+				            //res.render('pages/extra', {re: keys, letra: 'EXTRA'});
+			        	}
+			        	catch (err){
+			        		throw err;
+			        	}
+			        
+			        })
+			}
+			else {
+			
+				db.collection('nahuatl').find({nahuatl: {$regex: r}}).toArray(function(e, r) {
+					console.log( r.length)
+					res.render('pages/letra', {re: r, letra: req.query.letra, tamaño: r.length})
+					//res.send(r)
+				})
+			}
 			//
 		}
 	})
@@ -603,7 +724,13 @@ client.connect(function(err, client) {
 
 
 	app.get('/registro', function(req, res) {
-		res.render('pages/register3', {mensaje: 'vacio', })
+		if(req.query.sitio == undefined) {
+			res.render('pages/register3', {mensaje: 'vacio', sitio: 'nahuatl'})
+		}
+		else {
+			res.render('pages/register3', {mensaje: 'vacio', sitio: req.query.sitio})
+		}
+
 	})
 
 	app.get('/login', function(req, res) {
@@ -633,11 +760,12 @@ client.connect(function(err, client) {
 				req.body.uuid = randomID(64);
 		
 				console.log('valores: ', req.body)
+				//console.log(req.body.sitio)
 				db.collection('usuarios').insertOne(req.body, function(errr, resulta) {
 					if(err) throw err;
 					res.cookie('uuid', req.body.uuid);
 					res.cookie('matricula', req.body.matricula);
-					res.redirect('/publicaciones?matricula=' + req.body.matricula);
+					res.redirect('https://' + req.body.sitio + '.vcano5.com/login');
 	 			})
 			}
 		})
