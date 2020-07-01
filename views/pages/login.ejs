@@ -21,14 +21,23 @@
             <div class="col-md-8">
                 <div class="card px-3">
                     <div class="text-center">
-                    <h1 class="display-4" style="color: gray">NAHUATL</h1>
-                    <img class="img-fluid" src="https://image.flaticon.com/icons/svg/207/207127.svg" width="20%" alt="Icon made by smashicons from www.flaticon.com"> 
+                    <% if(url== "nahuatl") {%>
+                        <h1 class="display-4" style="color: gray">DICCIONARIO NAHUATL</h1>
+                    <img class="img-fluid" src="https://image.flaticon.com/icons/svg/207/207127.svg" style="width:15vw" alt="Icon made by smashicons from www.flaticon.com">
+                        <%} else if(url == "dioses") {%>
+                        <h1 class="display-3" style="color: gray">DIOSES</h1>
+                    <img class="img-fluid" src="https://dioses.s3-us-west-2.amazonaws.com/zeus.svg" style="width:15vw">
+                        <% } else {%>
+                        <h1 class="display-1" style="color: gray"><%=url%></h1>
+                    <img class="img-fluid" src="https://i.imgur.com/THUM0o9.png" style="width:15vw">
+                        <% } %>
                     </div>
                     <hr style="border-color: lightgray;">
                     
                     <div class="card-body">
 
                         <form action="/login" method="POST">
+                            <input type="text" value="<%=url%>" name="url" style="display: none;">
                             <h2>Iniciar sesión</h2>
                             <%= mensaje%>
 

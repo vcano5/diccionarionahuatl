@@ -329,7 +329,7 @@ client.connect(function(err, client) {
 
 	app.get('/login', function(req, res) {
 		if(req.cookies.matricula == undefined) {
-			res.render('pages/login', {mensaje: ''})
+			res.render('pages/login', {mensaje: '', url: (req.query.url || 'nahuatl')})
 		}
 		else {
 			res.redirect('/publicaciones?matricula=' + req.cookies.matricula)
@@ -358,17 +358,21 @@ client.connect(function(err, client) {
 			if(resu.length > 0) {
 				if(resu[0].password == passGenerator(req.body.password) || resu[0].contrasena == passGenerator(req.body.password)) {
 					if(resu[0].fb_id !== null || resu[0].nunca !== 0) {
-						res.cookie('uuid', resu[0].uuid);
-						res.cookie('matricula', resu[0].matricula);
-						res.redirect('/publicaciones?matricula=' + resu[0].matricula);
+						res.render('pages/afterLogin', {url: (req.body.url || "nahuatl"), uuid: resu[0].uuid, matricula: resu[0].matricula})
+						//res.cookie('uuid', resu[0].uuid);
+						//res.cookie('matricula', resu[0].matricula);
+						//res.redirect('/publicaciones?matricula=' + resu[0].matricula);
 					}
 					else {
 						res.redirect('/asociarMessenger?matricula=' + resu[0].matricula);
 					}
 				}
 				else {
-					res.render('pages/login', {mensaje: "La contraseña o matricula es incorrecta", recursos: cargarR(req.cookies.direccion)})
+					res.render('pages/login', {url: (req.body.url || "nahuatl"), mensaje: "La contraseña o matricula es incorrecta", recursos: cargarR(req.cookies.direccion)})
 				}
+			}
+			else {
+				res.render('pages/login', {url: (req.body.url || "nahuatl"), mensaje: "No encontre tu cuenta :(", recursos: cargarR(req.cookies.direccion)})
 			}
 		})
 	})
@@ -734,7 +738,7 @@ client.connect(function(err, client) {
 	})
 
 	app.get('/login', function(req, res) {
-		res.render('pages/login')
+		res.render('pages/login', {url: (req.query.url || 'nahuatl')})
 	})
 
 	app.get('/privacidad', function(req, res) {
@@ -977,6 +981,21 @@ client.connect(function(err, client) {
 		else {
 			res.sendStatus(401)
 		}
+	})
+
+	app.get('/instalarCookies', function(req, res) {
+		//res.send(req.headers)
+		if(req.query.tipo == "autentificacion") {
+			res.cookie('matricula', req.query.matricula);
+			res.cookie('posts', "");
+			res.cookie('uuid', req.query.uuid);
+			res.setHeader('Content-Type', "image/png")
+			res.sendStatus(200);
+		}
+		else {
+			res.sendStatus(403)
+		}
+		
 	})
 
 	function getFooter(actual, callback) {
