@@ -355,7 +355,7 @@ client.connect(function(err, client) {
 			res.render('pages/login', {mensaje: '', url: (req.query.url || 'nahuatl')})
 		}
 		else {
-			db.collection('usuarios').findOne({matricula: req.cookies.matricula}).toArray(function(err, r) {
+			db.collection('usuarios').find({matricula: req.cookies.matricula}).toArray(function(err, r) {
 				if(err) throw err;
 				if(r[0].confirmado == '1') {
 					res.redirect('/publicaciones?matricula=' + req.cookies.matricula)
