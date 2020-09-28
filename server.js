@@ -355,7 +355,15 @@ client.connect(function(err, client) {
 			res.render('pages/login', {mensaje: '', url: (req.query.url || 'nahuatl')})
 		}
 		else {
-			res.redirect('/publicaciones?matricula=' + req.cookies.matricula)
+			db.collection('usuarios').findOne({matricula: req.cookies.matricula}).toArray(function(err, r) {
+				if(err) throw err;
+				if(r[0].confirmado == '1') {
+					res.redirect('/publicaciones?matricula=' + req.cookies.matricula)
+				}
+				else {
+					res.redirect('/publicaciones?matricula=' + req.cookies.matricula + '&vtc=true')
+				}
+			})
 		}
 	})
 
@@ -839,6 +847,19 @@ client.connect(function(err, client) {
 		res.sendStatus(200);
 	})
 
+	app.get('/confirmarCorreo', (req, res) => {
+
+		db.collection('usuarios').find({email: req.query.email}).toArray(function(err, r) {
+			if(err) throw err;
+			if(r[0].confirmado == undefined) {
+				db.collection('usuarios').updateOne({email: req.query.email}, {$set: {confirmado: '1'}}, function(err, r) {
+					if(err) throw err;
+					res.render('pages/success')
+				})
+			}
+		})
+	})
+
 	app.post('/register', function(req, res) {
 		db.collection('usuarios').find({matricula: req.body.matricula}).toArray(function(error, r) {
 			if(error) {
@@ -855,6 +876,16 @@ client.connect(function(err, client) {
 		
 				console.log('valores: ', req.body)
 				//console.log(req.body.sitio)
+				const msg = {
+					to: req.body.email,
+					from: "yo@vcano5.com",
+					templateId: "d-617ba7f19dab427ca4d0ce249724dd5b",
+					dynamicTemplateData: {
+						url: 'nahuatl.vcano5.com/confirmarCorreo?email=' + req.body.email
+					}
+				}
+				//console.log(msg)
+				sgMail.send(msg)
 				db.collection('usuarios').insertOne(req.body, function(errr, resulta) {
 					if(err) throw err;
 					res.cookie('uuid', req.body.uuid);
@@ -892,14 +923,14 @@ client.connect(function(err, client) {
 						if(rr.length > 0) {
 							if(typeof req.cookies.matricula !== undefined) {
 								if(req.cookies.matricula == rr[0].matricula) {
-									res.render('pages/matricula', {nahuatl: r, user: rr[0], tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: true})
+									res.render('pages/matricula', {nahuatl: r, user: rr[0], tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: true, vtc: req.query.vtc})
 								}
 								else {
-									res.render('pages/matricula', {nahuatl: r, user: rr[0], tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: false})
+									res.render('pages/matricula', {nahuatl: r, user: rr[0], tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: false, vtc: req.query.vtc})
 								}
 							}
 							else {
-								res.render('pages/matricula', {nahuatl: r, user: rr[0], tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: false})
+								res.render('pages/matricula', {nahuatl: r, user: rr[0], tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: false, vtc: req.query.vtc})
 							}
 						}
 						else {
@@ -907,7 +938,7 @@ client.connect(function(err, client) {
 							rr.nombre = "No registrado";
 							//rr[0].esAdmin = 0;
 
-							res.render('pages/matricula', {nahuatl: r, user: rr, tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: false})
+							res.render('pages/matricula', {nahuatl: r, user: rr, tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: false, vtc: req.query.vtc})
 							//res.render('pages/error', {texto: "Es posible que el enlace que seleccionaste esté dañado o que se haya eliminado la página. NU_E_0"})
 						}
 					})
