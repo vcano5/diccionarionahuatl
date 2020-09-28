@@ -9,11 +9,7 @@
 <body class="text-light">
 	<br>
 <p class="text-light display-4 text-break" style="text-align: center; font-size: 11vw">
-	<% if(vtc) {%>
-		<div class="alert bg-danger">
-		<span> NO HAS CONFIRMADO TU CORREO</span>
-		 </div>
-	<% }%>
+	
 				<%=user.nombre%><%=user.name%><% if(user.esAdmin == 1) { %>
 				<span class="lead bg-danger p-2 text-light">Admin</span>
 
@@ -22,6 +18,11 @@
 
 
 		<div class="container">
+			<% if(vtc) {%>
+		<div class="alert bg-danger">
+		<span> NO HAS CONFIRMADO TU CORREO</span>
+		 </div>
+	<% }%>
 <div class="pb-4">
 			
 			 	
