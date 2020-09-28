@@ -407,7 +407,7 @@ client.connect(function(err, client) {
 	app.get('/logout', function(req, res) {
 		res.clearCookie('uuid');
 		res.clearCookie('matricula');
-		res.render('pages/login',{mensaje: 'Cerraste tu sesion correctamente'})
+		res.render('pages/login',{url: 'nahuatl', mensaje: 'Cerraste tu sesion correctamente'})
 	})
 
 	function passGenerator(passw) {
