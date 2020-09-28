@@ -923,7 +923,7 @@ client.connect(function(err, client) {
 						if(rr.length > 0) {
 							if(typeof req.cookies.matricula !== undefined) {
 								if(req.cookies.matricula == rr[0].matricula) {
-									res.render('pages/matricula', {nahuatl: r, user: rr[0], tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: true, vtc: true})
+									res.render('pages/matricula', {nahuatl: r, user: rr[0], tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: true, vtc: req.query.vtc})
 								}
 								else {
 									res.render('pages/matricula', {nahuatl: r, user: rr[0], tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: false, vtc: req.query.vtc})
