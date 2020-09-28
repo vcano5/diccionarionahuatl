@@ -14,15 +14,15 @@
     <%- include ('../partials/header') -%>
 </header>
 <body>
-  <div class="container text-white"> 
+  <div class="container text-dark"> 
 <br>
 
 
 <div class="table-responsive">
-  <table class="table table-borderless text-white">
+  <table class="table table-borderless text-dark">
     <thead>
       <tr >
-        <th scope="col" ><h1><%=palabra.espanol%><h4 class="display-4 text-white" style="font-size: 16px">PALABRA</h4></h1></th>
+        <th scope="col" ><h1><%=palabra.espanol%><h4 class="display-4 text-dark" style="font-size: 16px">PALABRA</h4></h1></th>
       </tr>
     </thead>
     <tbody>
@@ -37,40 +37,18 @@
       <tr>
         <td>
           <div class="btn-group btn-group-sm" role="group" aria-label="Opciones">
-            <div class="btn-group mr-2" role="group" aria-label="First group">
-                <a href="/eliminar?c=<%=palabra.clave%>" class="btn btn-danger">Eliminar </span></a> 
+            <div class="btn-group mr-2" role="group">
+                <a href="/eliminar?c=<%=palabra.clave%>" class="text-white btn btn-danger">Eliminar </span></a> 
             </div>
 
-            <div class="btn-group mr-2" role="group" aria-label="Segundo group">
+            <div class="btn-group mr-2" role="group">
 
                
                 <a href="/modificar?c=<%=palabra.clave%>" class=" btn btn-warning" id="desactivado">Modificar </a> 
               
             </div>
 
-            <div class="btn-group mr-2" role="group" aria-label="Tercero group">
-              <button class="btn btn-primary" onclick="toggleComments()"> Comentarios 
-                <a class="badge badge-dark"><span class="fb-comments-count"></span></a> 
-              </button>
-            </div>
-          </div>
-        </td>
-      </tr>
-      <%} else {%>
-            <tr>
-        <td>
-          <div class="btn-group btn-group-sm" role="group" aria-label="Opciones">
-            <div class="btn-group mr-2" role="group" aria-label="First group">
-
-                <a class="btn btn-secondary" ><span class="fa fa-lock"></span> Eliminar </a> 
-            </div>
-
-            <div class="btn-group mr-2" role="group" aria-label="Segundo group">
-
-                <a class="btn btn-secondary" id="desactivado"> <span class="fa fa-lock"></span> Modificar</a> 
-            </div>
-
-            <div class="btn-group mr-2" role="group" aria-label="Tercero group">
+            <div class="btn-group mr-2" role="group">
               <button class="btn btn-primary" onclick="toggleComments()"> Comentarios 
                 <a class="badge badge-dark"><span class="fb-comments-count"></span></a> 
               </button>
@@ -79,6 +57,10 @@
         </td>
       </tr>
       <%} %>
+    </tr>
+  </tbody>
+</table>
+<table class="pb-3">
         <td><a data-toggle="collapse" href="#extraInfo" role="button" aria-expanded="false" aria-controls="extraInfo" href="#extraInfo"><i class="fa fa-plus" aria-hidden="true"></i> Informacion adicional
 </a></td>
       </tr>
@@ -87,8 +69,8 @@
   </table>
   
 
-  <div class="collapse" id="extraInfo">
-<table class="table table-borderless text-white">
+  <div class="collapse py-3" id="extraInfo">
+<table class="table table-borderless text-dark">
       <tbody>
         <tr>
 
@@ -116,9 +98,9 @@
       </tbody>
   </table>
   </div>
-  <div style="background-color: #ffffff; background: #ffffff; display:none" id="ccomentarios">
-    <div class="fb-like m-2" id="likes" style="display:none" data-href="https://nahuatl.vcano5.com/clave?c=<%=palabra.clave%>" data-width="" data-layout="standard" data-action="like" data-size="large" data-share="true"></div>
-  <div class="fb-comments bg-light" style="display: none" id="comentarios" data-href="http://nahuatl.vcano5.com/palabra?c=<%=palabra.clave%>" data-width="90%" data-numposts="5"></div>
+  <div class="py-3" style="background-color: #ffffff; background: #ffffff" id="ccomentarios">
+    <div class="fb-like m-2" id="likes" data-href="https://nahuatl.vcano5.com/clave?c=<%=palabra.clave%>" data-width="" data-layout="standard" data-action="like" data-size="large" data-share="true"></div>
+  <div class="fb-comments bg-light" id="comentarios" data-href="http://nahuatl.vcano5.com/palabra?c=<%=palabra.clave%>" data-width="90%" data-numposts="5"></div>
 </div>
 </div>
 </div>

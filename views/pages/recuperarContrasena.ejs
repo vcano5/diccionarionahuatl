@@ -4,18 +4,18 @@
   <%- include ('../partials/head') -%>
   <style type="text/css">
     body {
-        padding-top: 6rem;
-        padding-bottom: 6rem;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
     }
 .login-form
 {
-    padding-top: 4.5rem;
-    padding-bottom: 4.5rem;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
 }
 
   </style>
 </head>
-<body style="background-color: #232526">
+<body class="bg-white">
     
 
    
@@ -32,22 +32,20 @@
                     
                     </div>
                     <hr style="border-color: lightgray;">
-                    <h2 class="my-3">Recuperar contraseña</h2>
+                    <h4 class="card-title my-3 text-center">Recuperar contraseña</h4>
                     <div class="card-body">
-                        <% if (tipo == 1) { %>
-                    <p>Recupera tu contraseña mediante Messenger  <a href="https://m.me/Dicc.Nahuatl?ref=cambiarContrasena">bot en Messenger <i class="fab fa-facebook-messenger"></i></a></p>
-                   <% } else if(tipo == 2) {%>
-                   <p>Envia un email a <a href="mailto:al195352@alumnos.uacj.mx?Subject=Recuperar%20Contraseña">al195352@alumnos.uacj.mx</a> para recuperar tu contraseña</p>
-<% } %>
+                        <form action="/rcPass" method="POST">
+                            <label for="correo">Introduce el correo electronico asociado con tu cuenta</label>
+                            <input type="email" name="correo" required>
+                            <input type="text" name="matricula" value="<%=matricula%>" hidden>
+                            <button class="btn btn-success p-1" type="submit"> Enviar</button>
+                            <p>Si tu correo coincide con el que te registraste te enviaremos un enlace para que recuperes el acceso a tu cuenta.</p>
+                        </form>
                 </div>
             </div>
         </div>
     </div>
     <br>
-    <div class="fixed-bottom text-center" style="padding-bottom: 3rem;">
-            <button class="btn btn-secondary btn-sm rounded-4" onclick="document.location = '/'"><span class="fa fa-home"> PAGINA PRINCIPAL</span></button>
-        </div>
-    </div>
 
     
 

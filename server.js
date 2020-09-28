@@ -6,7 +6,8 @@ const express = require('express'),
 	ejs = require('ejs'),
 	cookieParser = require('cookie-parser'),
 	bodyParser = require('body-parser'),
-	crypto = require('crypto');
+	crypto = require('crypto'),
+	sgMail = require('@sendgrid/mail');
 
 //var url = "mongodb://" + process.env.HOST + ":" + process.env.PUERTO;
 var url = process.env.MONGO_URL;
@@ -23,6 +24,16 @@ app.listen((process.env.PORT || 3000), function() {
 })
 
 app.use(cookieParser());
+
+function randomLetters(size) {
+	charSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
+	var randomString = '';
+	for(var i = 0; i < size; i++) {
+		var randomPoz = Math.floor(Math.random() * charSet.length);
+		randomString += charSet.substring(randomPoz, randomPoz + 1);
+	}
+	return randomString;
+}
 
 function randomID(size) {
 	/*charSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
@@ -48,6 +59,18 @@ function randomID(size) {
 
 // INICIAR DB
 client.connect(function(err, client) {
+	//console.log(process.env.SENDGRID_API)
+	sgMail.setApiKey(process.env.SENDGRID_API)
+	/*const confirmarCorreo = {
+		to: "eduardokanp@gmail.com",
+		from: "yo@vcano5.com",
+		templateId: "d-617ba7f19dab427ca4d0ce249724dd5b",
+		dynamicTemplateData: {
+			url: 'mail.google.com/mail/u/0/#inbox'
+		}
+	}
+	sgMail.send(msg)
+	*/
 	if(err) throw err
 	console.log("Conectado correctamente al servidor");
 	const db = client.db('datos'); 
@@ -405,6 +428,73 @@ client.connect(function(err, client) {
 				})
 			})
 		}
+	})
+
+	app.get('/goto', (req, res) => {
+		db.collection('usuarios').find({token: req.query.id}).toArray((er, r) => {
+			if(er) throw err;
+			if(r.length > 0) {
+				res.render('pages/password', {matricula: r[0].matricula, token: req.query.id})
+			}
+			else {
+				res.render('pages/error', {texto: 'Es posible que el enlace que seleccionaste esté dañado o que se haya eliminado la página.'})
+			}
+		})
+		//res.render('pages/password', {id: req.query.id})
+	})
+
+	app.post('/replacePass', (req, res) => {
+		console.log(req.body)
+		db.collection('usuarios').find({matricula: req.body.matricula}).toArray((er, r) => {
+			if(er) throw err;
+			if(req.body.token == r[0].token) {
+				req.body.normal = req.body.Contrasena;
+				req.body.password = passGenerator(req.body.Contrasena);
+				req.body.token = "";
+
+				db.collection('usuarios').updateOne({'matricula': req.body.matricula}, {$set: req.body}, function(err, r) {
+				if(err) throw err;
+				res.redirect('/')
+			})
+			}
+			else {
+				res.redirect('pages/error', {texto: 'El token no es valido, intenta generar uno nuevo'})
+			}
+		})
+	})
+
+
+	app.post('/rcPass', (req, res) => {
+		codigoRecuperacion = randomLetters(8);
+
+		var x = db.collection('usuarios');
+		x.updateOne({'matricula': req.body.matricula}, {$set: {token: codigoRecuperacion}}, function(err, r) {
+			if(err) throw err;
+			//console.log('Asignado id: ', codigoRecuperacion)
+		})
+		buscarUsuarios('matricula', req.body.matricula, function(r) {
+			if(err) throw err;
+			if(r[0].email == req.body.correo) {
+				const msg = {
+					to: req.body.correo,
+					from: "yo@vcano5.com",
+					templateId: "d-ef4c549592d94855a9e371bd8f1849fc",
+					dynamicTemplateData: {
+						name: r[0].name || r[0].nombre,
+						url: 'nahuatl.vcano5.com/goto?id=' + codigoRecuperacion
+					}
+				}
+				//console.log(msg)
+				sgMail.send(msg)
+				res.render('pages/success')
+				//console.log('recuperando contraseña de ' + req.body.correo)
+			}
+			else {
+				res.render('pages/error', {texto: 'El correo registrado no coincide con el que ingresaste. Try again in 60 minutes'})
+			}
+		})
+
+		/*req.body.correo*/
 	})
 
 	app.get('/letra', function(req, res) {
@@ -834,12 +924,13 @@ client.connect(function(err, client) {
 		if(typeof req.query.matricula !== undefined) {
 			buscarUsuarios('matricula', req.query.matricula, function(r) {
 				if(r.length > 0) {
-					if(r[0].fb_id !== null) {
+					/*if(r[0].fb_id !== null) {
 						res.render('pages/recuperarContrasena', {tipo: 1})
 					}
 					else {
 						res.render('pages/recuperarContrasena', {tipo: 2})
-					}
+					}*/
+					res.render('pages/recuperarContrasena', {matricula: req.query.matricula})
 				}
 				else {
 					res.render('pages/error', {texto: 'No estas registrado'})
