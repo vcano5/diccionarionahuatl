@@ -6,9 +6,9 @@
 
 </head>
 <%- include ('../partials/header.ejs') -%>
-<body class="text-light">
+<body class="text-light bg-<%=tema.bg%>">
 	<br>
-<p class="text-light display-4 text-break" style="text-align: center; font-size: 11vw">
+<p class="text-<%=tema.texto%> display-4 text-break" style="text-align: center; font-size: 11vw">
 				Configuración</p>
 	<div class="wrapper">
 		<div class="container">
@@ -39,11 +39,12 @@
 				<button class="btn rounded-4 btn-outline-secondary" onclick="goBack()"><span class="fa fa-undo"></span></button>
 				<% if(matricula !== "Anónimo") { %>
 					<a href="/logout" class=" mx-1 btn btn-danger"><i class="fas fa-sign-out-alt"></i> </a>
-					<a class="btn rounded-4 btn-outline-success" href="/estadisticas"><i class="fas fa-chart-bar" aria-hidden="true"> </i></a>
+					
 				<%} else {%>
 					<a href="/login" class=" mx-1 btn btn-success"><i class="fa fa-sign-in-alt" aria-hidden="true"></i> </a>
 				<% } %>
 				<button class="mx-1 btn btn-primary" type="submit" form="publi"><i class="fas fa-paper-plane"></i> </button>
+				<a class="btn rounded-4 btn-outline-<%=tema.boton%>" href="/toggleTheme"><i class="fas fa-adjust"></i></a>
 			</div>
 		</form>
 	</div>

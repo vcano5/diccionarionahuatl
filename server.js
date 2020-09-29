@@ -25,6 +25,49 @@ app.listen((process.env.PORT || 3000), function() {
 
 app.use(cookieParser());
 
+app.get('/toggleTheme', (req, res) => {
+	if(req.cookies.tema == undefined) {
+		res.cookie('tema', 'blanco')
+
+	}
+	else {
+		res.clearCookie('tema')
+	}
+	backURL = req.header('Referer') || '/';
+	res.redirect(backURL)
+	//res.redirect('/configuracion')
+})
+
+app.use(function(req, res, next) {
+	var tema = {};
+	if(req.cookies.tema == undefined) {
+		tema = {
+			bg: 'dark',
+			htmlColor: '#343a40',
+			botonPrimario: 'primary',
+			outline: 'primary',
+			texto: 'white',
+			textod: 'dark',
+			boton: 'light'
+		}
+	}
+	else {
+		tema = {
+			boton: 'dark',
+			bg: 'light',
+			texto: 'dark',
+			htmlColor: '#f8f9fa',
+			outline: 'dark',
+			botonPrimario: 'secondary',
+			textod: 'dark'
+		}
+	}
+	res.locals.layout = tema;
+	//console.log('Time:', Date.now());
+	//console.log(res.locals.layout)
+	next();
+})
+
 function randomLetters(size) {
 	charSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
 	var randomString = '';
@@ -240,11 +283,11 @@ client.connect(function(err, client) {
 	app.get('/', function(req, res) {
 		res.cookie('posts', (req.cookies.posts || 50))
 		//res.cookie('direccion', req.headers.host);
-		res.render('pages/index', {direccion: req.cookies.direccion});
+		res.render('pages/index', {tema: res.locals.layout, direccion: req.cookies.direccion});
 	})
 
 	app.get('/estadisticas', function(req, res) {
-		res.render('pages/estadisticas');
+		res.render('pages/estadisticas', {tema: res.locals.layout});
 	})
 
 	function sendFooter(req, respuesta) {
@@ -265,7 +308,7 @@ client.connect(function(err, client) {
 	}
 
 	app.get('/configuracion', function(req, res) {
-		res.render('pages/configuracion', {matricula: (req.cookies.matricula || "Anónimo"), posts: (req.cookies.posts || 10), texto: (req.query.texto || "")})
+		res.render('pages/configuracion', {tema: res.locals.layout, matricula: (req.cookies.matricula || "Anónimo"), posts: (req.cookies.posts || 10), texto: (req.query.texto || "")})
 	})
 
 	app.post('/configuracion', function(req, res) {
@@ -309,13 +352,13 @@ client.connect(function(err, client) {
 										}
 									}
 									//console.log(resu)
-									res.render('pages/main-b', {nahuatl: resu, texto: "RESULTADOS", subtitulo: "Pagina: " + (parseInt(req.query.pagina || 0) + 1) + " de " + totales, tamano: resultados.length, paginas: totales, pagina: parseInt(req.query.pagina || 0) + 1, path: "busqueda", parametro: "&n=" + req.query.n})
+									res.render('pages/main-b', {tema: res.locals.layout, nahuatl: resu, texto: "RESULTADOS", subtitulo: "Pagina: " + (parseInt(req.query.pagina || 0) + 1) + " de " + totales, tamano: resultados.length, paginas: totales, pagina: parseInt(req.query.pagina || 0) + 1, path: "busqueda", parametro: "&n=" + req.query.n})
 								})
 									
 								//res.render('pages/main', {nahuatl: resultados, texto: "BUSQUEDA", subtitulo: 'Entradas que incluyen: ' + req.query.n, tamano: resultados.length})
 							}
 							else {
-								res.render('pages/error', {texto: "No se encontraron resultados."})
+								res.render('pages/error', {tema: res.locals.layout, texto: "No se encontraron resultados."})
 							}
 						})
 					})
@@ -329,7 +372,7 @@ client.connect(function(err, client) {
 		if(req.query.c != undefined) {
 			buscarNahuatl('clave', req.query.c, function(resu) {
 				puedeModificar(req, req.query.c, function(r) {
-					res.render('pages/palabra', {palabra: resu[0], g: false, mensaje: '', modificar: r})
+					res.render('pages/palabra', {tema: res.locals.layout, palabra: resu[0], g: false, mensaje: '', modificar: r})
 				})
 			})
 		}
@@ -352,7 +395,7 @@ client.connect(function(err, client) {
 
 	app.get('/login', function(req, res) {
 		if(req.cookies.matricula == undefined) {
-			res.render('pages/login', {mensaje: '', url: (req.query.url || 'nahuatl')})
+			res.render('pages/login', {tema: res.locals.layout, mensaje: '', url: (req.query.url || 'nahuatl')})
 		}
 		else {
 			db.collection('usuarios').find({matricula: req.cookies.matricula}).toArray(function(err, r) {
@@ -367,11 +410,11 @@ client.connect(function(err, client) {
 		}
 	})
 
-	app.get('/cambiarMiMatriculaALV', function(req, res) {
+	/*app.get('/cambiarMiMatriculaALV', function(req, res) {
 		actualizar('usuarios', 'matricula', '195352', 'nunca', '1', function(resu) {
 			res.send(resu)
 		})
-	})
+	})*/
 
 	app.get('/nunca', function(req, res) {
 		actualizarUsuario('matricula', req.query.matricula, 'nunca', '1', function(r) {
@@ -389,7 +432,7 @@ client.connect(function(err, client) {
 			if(resu.length > 0) {
 				if(resu[0].password == passGenerator(req.body.password) || resu[0].contrasena == passGenerator(req.body.password)) {
 					if(resu[0].fb_id !== null || resu[0].nunca !== 0) {
-						res.render('pages/afterLogin', {url: (req.body.url || "nahuatl"), uuid: resu[0].uuid, matricula: resu[0].matricula})
+						res.render('pages/afterLogin', {tema: res.locals.layout, url: (req.body.url || "nahuatl"), uuid: resu[0].uuid, matricula: resu[0].matricula})
 						//res.cookie('uuid', resu[0].uuid);
 						//res.cookie('matricula', resu[0].matricula);
 						//res.redirect('/publicaciones?matricula=' + resu[0].matricula);
@@ -399,23 +442,23 @@ client.connect(function(err, client) {
 					}
 				}
 				else {
-					res.render('pages/login', {url: (req.body.url || "nahuatl"), mensaje: "La contraseña o matricula es incorrecta", recursos: cargarR(req.cookies.direccion)})
+					res.render('pages/login', {tema: res.locals.layout, url: (req.body.url || "nahuatl"), mensaje: "La contraseña o matricula es incorrecta", recursos: cargarR(req.cookies.direccion)})
 				}
 			}
 			else {
-				res.render('pages/login', {url: (req.body.url || "nahuatl"), mensaje: "No encontre tu cuenta :(", recursos: cargarR(req.cookies.direccion)})
+				res.render('pages/login', {tema: res.locals.layout, url: (req.body.url || "nahuatl"), mensaje: "No encontre tu cuenta :(", recursos: cargarR(req.cookies.direccion)})
 			}
 		})
 	})
 
-	app.get('/asociarMessenger', function(req, res) {
+	/*app.get('/asociarMessenger', function(req, res) {
 		res.sendStatus(301)
-	})
+	})*/
 
 	app.get('/logout', function(req, res) {
 		res.clearCookie('uuid');
 		res.clearCookie('matricula');
-		res.render('pages/login',{url: 'nahuatl', mensaje: 'Cerraste tu sesion correctamente'})
+		res.render('pages/login', {tema: res.locals.layout, url: 'nahuatl', mensaje: 'Cerraste tu sesion correctamente'})
 	})
 
 	function passGenerator(passw) {
@@ -426,13 +469,13 @@ client.connect(function(err, client) {
 
 	app.get('/frase', function(req, res) {
 		if(req.query.c == undefined) {
-			res.render('pages/error', {texto: "Es posible que el enlace que seleccionaste esté dañado o que se haya eliminado la página."})
+			res.render('pages/error', {tema: res.locals.layout, texto: "Es posible que el enlace que seleccionaste esté dañado o que se haya eliminado la página."})
 		}
 		else {
 			buscarNahuatl('clave', req.query.c, function(resu) {
 				//res.send(resu)
 				puedeModificar(req, req.query.c, function(r) {
-					res.render('pages/frase', {palabra: resu[0], g: false, mensaje: '', modificar: r})
+					res.render('pages/frase', {tema: res.locals.layout, palabra: resu[0], g: false, mensaje: '', modificar: r})
 				})
 			})
 		}
@@ -442,10 +485,10 @@ client.connect(function(err, client) {
 		db.collection('usuarios').find({token: req.query.id}).toArray((er, r) => {
 			if(er) throw err;
 			if(r.length > 0) {
-				res.render('pages/password', {matricula: r[0].matricula, token: req.query.id})
+				res.render('pages/password', {tema: res.locals.layout, matricula: r[0].matricula, token: req.query.id})
 			}
 			else {
-				res.render('pages/error', {texto: 'Es posible que el enlace que seleccionaste esté dañado o que se haya eliminado la página.'})
+				res.render('pages/error', {tema: res.locals.layout, texto: 'Es posible que el enlace que seleccionaste esté dañado o que se haya eliminado la página.'})
 			}
 		})
 		//res.render('pages/password', {id: req.query.id})
@@ -499,7 +542,7 @@ client.connect(function(err, client) {
 				//console.log('recuperando contraseña de ' + req.body.correo)
 			}
 			else {
-				res.render('pages/error', {texto: 'El correo registrado no coincide con el que ingresaste. Try again in 60 minutes'})
+				res.render('pages/error', {tema: res.locals.layout, texto: 'El correo registrado no coincide con el que ingresaste. Try again in 60 minutes'})
 			}
 		})
 
@@ -557,7 +600,7 @@ client.connect(function(err, client) {
 			            keys[keys.length] = {"letra": "EXTRA","tamaño": tm, "uri": 'EXTRA'}
 
 			            //res.json(keys)
-			            res.render('pages/letras', {letras: keys})
+			            res.render('pages/letras', {tema: res.locals.layout, letras: keys})
 			        });
 
 			//res.render('pages/letras');
@@ -669,7 +712,7 @@ client.connect(function(err, client) {
 			
 				db.collection('nahuatl').find({nahuatl: {$regex: r}}).toArray(function(e, r) {
 					console.log( r.length)
-					res.render('pages/letra', {re: r, letra: req.query.letra, tamaño: r.length})
+					res.render('pages/letra', {tema: res.locals.layout, re: r, letra: req.query.letra, tamaño: r.length})
 					//res.send(r)
 				})
 			}
@@ -677,11 +720,11 @@ client.connect(function(err, client) {
 		}
 	})
 
-	app.get('/prueba', function(req, res) {
+	/*app.get('/prueba', function(req, res) {
 		db.collection('nahuatl').aggregate({$group: {espanol: {$substr: ['$words', 0, 1]}, count: {$sum: 1}}}).toArray(function(err, r) {
 			res.send(r)
 		})
-	})
+	})*/
 
 	function Shuffle(o, c) {
 		var temp = o;
@@ -703,7 +746,7 @@ client.connect(function(err, client) {
 					/*Shuffle(resu, function(resultado) {
 						res.render('pages/main', {nahuatl: resultado, texto: "PALABRAS", subtitulo: "Pagina: " + (parseInt(req.query.pagina) + 1) + " de " + totales, tamano: resultados.length, paginas: totales, pagina: parseInt(req.query.pagina) + 1, path: "palabras"})
 					})*/
-					res.render('pages/main', {nahuatl: resu, texto: "PALABRAS", subtitulo: "Pagina: " + (parseInt(req.query.pagina) + 1) + " de " + totales, tamano: resultados, paginas: totales, pagina: parseInt(req.query.pagina) + 1, path: "palabras"})
+					res.render('pages/main', {tema: res.locals.layout, nahuatl: resu, texto: "PALABRAS", subtitulo: "Pagina: " + (parseInt(req.query.pagina) + 1) + " de " + totales, tamano: resultados, paginas: totales, pagina: parseInt(req.query.pagina) + 1, path: "palabras"})
 				})
 			})
 		})
@@ -723,7 +766,7 @@ client.connect(function(err, client) {
 			db.collection('nahuatl').find({espanol: ""}).sort({nahuatl: 1}).skip(resp[2]).limit(parseInt(req.cookies.posts || 50)).toArray(function(err, resu) {
 				if(err) throw err;
 				//resu.sort()
-					res.render('pages/main', {nahuatl: resu, texto: "FRASES", subtitulo: "Pagina: " + (parseInt(req.query.pagina) + 1) + " de " + totales, tamano: resultados, paginas: totales, pagina: parseInt(req.query.pagina) + 1, path: "frases"})
+					res.render('pages/main', {tema: res.locals.layout, nahuatl: resu, texto: "FRASES", subtitulo: "Pagina: " + (parseInt(req.query.pagina) + 1) + " de " + totales, tamano: resultados, paginas: totales, pagina: parseInt(req.query.pagina) + 1, path: "frases"})
 				})
 			})
 		})
@@ -757,7 +800,7 @@ client.connect(function(err, client) {
 
 	app.get('/formulario', function(req, res) {
 		getAutor(req, function(a) {
-			res.render('pages/formulario', {id: randomID(8), autor: a, matricula: getMatricula(req)})
+			res.render('pages/formulario', {tema: res.locals.layout, id: randomID(8), autor: a, matricula: getMatricula(req)})
 		})
 	})
 
@@ -800,7 +843,7 @@ client.connect(function(err, client) {
 
 	app.get('/eliminar', function(req, res) {
 		buscarNahuatl('clave', req.query.c, function(resultado) {
-			res.render('pages/eliminar', {palabra: resultado[0]})
+			res.render('pages/eliminar', {tema: res.locals.layout, palabra: resultado[0]})
 		})
 	})
 
@@ -820,7 +863,7 @@ client.connect(function(err, client) {
 	app.get('/modificar', function(req, res) {
 		if(req.query.c !== undefined) {
 			buscarNahuatl('clave', req.query.c, function(r) {
-				res.render('pages/modificar', {datos: r[0]})
+				res.render('pages/modificar', {tema: res.locals.layout, datos: r[0]})
 			})
 		}
 	})
@@ -828,16 +871,16 @@ client.connect(function(err, client) {
 
 	app.get('/registro', function(req, res) {
 		if(req.query.sitio == undefined) {
-			res.render('pages/register3', {mensaje: 'vacio', sitio: 'nahuatl'})
+			res.render('pages/register3', {tema: res.locals.layout, mensaje: 'vacio', sitio: 'nahuatl'})
 		}
 		else {
-			res.render('pages/register3', {mensaje: 'vacio', sitio: req.query.sitio})
+			res.render('pages/register3', {tema: res.locals.layout, mensaje: 'vacio', sitio: req.query.sitio})
 		}
 
 	})
 
 	app.get('/login', function(req, res) {
-		res.render('pages/login', {url: (req.query.url || 'nahuatl')})
+		res.render('pages/login', {tema: res.locals.layout, url: (req.query.url || 'nahuatl')})
 	})
 
 	app.get('/privacidad', function(req, res) {
@@ -855,14 +898,14 @@ client.connect(function(err, client) {
 			if(r[0].confirmado == undefined) {
 				db.collection('usuarios').updateOne({email: req.query.email}, {$set: {confirmado: '1'}}, function(err, r) {
 					if(err) throw err;
-					res.render('pages/success')
+					res.render('pages/success', {tema: res.locals.layout})
 				})
 			}
 		})
 	})
 
 	app.get('/correo', (req, res) => {
-		res.render('pages/correo', {tipo: (req.query.tipo || 'registro')})
+		res.render('pages/correo', {tema: res.locals.layout, tipo: (req.query.tipo || 'registro')})
 	})
 
 	app.post('/register', function(req, res) {
@@ -872,7 +915,7 @@ client.connect(function(err, client) {
 				throw err
 			}
 			if(r.length > 0) {
-				res.render('pages/error', {texto: 'La matricula ya esta asociada a otra cuenta.'})
+				res.render('pages/error', {tema: res.locals.layout, texto: 'La matricula ya esta asociada a otra cuenta.'})
 			}
 			else {
 				req.body.normal = req.body.password;
@@ -917,7 +960,7 @@ client.connect(function(err, client) {
 			//buscarNahuatl('matricula', req.cookies.matricula, function())
 		}
 		else {
-			res.render('pages/error', {texto: 'Inicia sesion para ver tus publicaciones.'})
+			res.render('pages/error', {tema: res.locals.layout, texto: 'Inicia sesion para ver tus publicaciones.'})
 		}
 	})
 
@@ -930,14 +973,14 @@ client.connect(function(err, client) {
 						if(rr.length > 0) {
 							if(typeof req.cookies.matricula !== undefined) {
 								if(req.cookies.matricula == rr[0].matricula) {
-									res.render('pages/matricula', {nahuatl: r, user: rr[0], tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: true, vtc: req.query.vtc})
+									res.render('pages/matricula', {tema: res.locals.layout, nahuatl: r, user: rr[0], tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: true, vtc: req.query.vtc})
 								}
 								else {
-									res.render('pages/matricula', {nahuatl: r, user: rr[0], tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: false, vtc: req.query.vtc})
+									res.render('pages/matricula', {tema: res.locals.layout, nahuatl: r, user: rr[0], tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: false, vtc: req.query.vtc})
 								}
 							}
 							else {
-								res.render('pages/matricula', {nahuatl: r, user: rr[0], tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: false, vtc: req.query.vtc})
+								res.render('pages/matricula', {tema: res.locals.layout, nahuatl: r, user: rr[0], tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: false, vtc: req.query.vtc})
 							}
 						}
 						else {
@@ -945,7 +988,7 @@ client.connect(function(err, client) {
 							rr.nombre = "No registrado";
 							//rr[0].esAdmin = 0;
 
-							res.render('pages/matricula', {nahuatl: r, user: rr, tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: false, vtc: req.query.vtc})
+							res.render('pages/matricula', {tema: res.locals.layout, nahuatl: r, user: rr, tamaño: r.length, texto: req.query.matricula, subtitulo: r.length + " resultados para la busqueda.", matricula: false, vtc: req.query.vtc})
 							//res.render('pages/error', {texto: "Es posible que el enlace que seleccionaste esté dañado o que se haya eliminado la página. NU_E_0"})
 						}
 					})
@@ -968,26 +1011,26 @@ client.connect(function(err, client) {
 					else {
 						res.render('pages/recuperarContrasena', {tipo: 2})
 					}*/
-					res.render('pages/recuperarContrasena', {matricula: req.query.matricula})
+					res.render('pages/recuperarContrasena', {tema: res.locals.layout, matricula: req.query.matricula})
 				}
 				else {
-					res.render('pages/error', {texto: 'No estas registrado'})
+					res.render('pages/error', {tema: res.locals.layout, texto: 'No estas registrado'})
 				}
 			})
 		}
 	})
 
 	app.get('/recoverPassword', function(req, res) {
-		res.render('pages/olvideContrasena')
+		res.render('pages/olvideContrasena', {tema: res.locals.layout})
 	})
 	
 	app.get('/modificarPerfil', function(req, res) {
 		if(req.cookies.matricula == undefined && req.cookies.uuid == undefined) {
-			res.render('pages/error', {texto: 'Es posible que el enlace que seleccionaste esté dañado o que se haya eliminado la página.'})
+			res.render('pages/error', {tema: res.locals.layout, texto: 'Es posible que el enlace que seleccionaste esté dañado o que se haya eliminado la página.'})
 		}
 		else {
 			buscarUsuarios('matricula', req.cookies.matricula, function(r) {
-				res.render('pages/modificarPerfil', {user: r[0]})
+				res.render('pages/modificarPerfil', {tema: res.locals.layout, user: r[0]})
 			})
 		}
 	})
@@ -1025,7 +1068,7 @@ client.connect(function(err, client) {
 				//console.log('matriculas: ', matriculas)
 				db.collection('nahuatl').find({matricula: {$in: matriculas}}).toArray(function(errr, rr) {
 					if(errr) throw errr
-					res.render('pages/equipo', {nahuatl: rr, texto: req.query.equipo, tamaño: rr.length, equipos: nombres})
+					res.render('pages/equipo', {tema: res.locals.layout, nahuatl: rr, texto: req.query.equipo, tamaño: rr.length, equipos: nombres})
 					//res.json(rr)
 				}) 
 			})
@@ -1051,7 +1094,7 @@ client.connect(function(err, client) {
 	})
 
 	app.get('/letra', function(req, res) {
-		res.render('pages/error', {texto: "Es posible que el enlace que seleccionaste esté dañado o que se haya eliminado la página."})
+		res.render('pages/error', {tema: res.locals.layout, texto: "Es posible que el enlace que seleccionaste esté dañado o que se haya eliminado la página."})
 		/*if(req.query.letra != undefined) {
 			var regexT = new RegExp("/^[" + req.query.letra + "].*$/")
 			console.log('Expresion regular: ', regexT)
@@ -1071,7 +1114,7 @@ client.connect(function(err, client) {
 		db.collection('usuarios').updateOne({fb_id: req.body.fb_id}, {$set: req.body}, function(err, r) {
 			if(err) throw err;
 			if(r.matchedCount > 0) {
-				res.render('pages/success');
+				res.render('pages/success', {tema: res.locals.layout});
 			}
 			else {
 				res.json(req.body)
@@ -1092,10 +1135,10 @@ client.connect(function(err, client) {
 			db.collection('usuarios').find({fb_id: req.query.fb_id}).toArray(function(err, r) {
 				if(err) throw err;
 				if(req.query.last_token == r[0].last_token) {
-					res.render('pages/cambiarContraseña', {fb_id: req.query.fb_id, token: req.query.last_token});
+					res.render('pages/cambiarContraseña', {tema: res.locals.layout, fb_id: req.query.fb_id, token: req.query.last_token});
 				}
 				else {
-					res.render('pages/error', {texto: 'Tu token ha caducado, genera uno nuevo en la aplicacion.'})
+					res.render('pages/error', {tema: res.locals.layout, texto: 'Tu token ha caducado, genera uno nuevo en la aplicacion.'})
 				}
 			})
 			/*buscarUsuarios('fb_id', req.query.fb_id, function(r) {
@@ -1133,6 +1176,6 @@ client.connect(function(err, client) {
 	}
 
 	app.get('*', function(req, res) {
-		res.render('pages/error', {texto: "Es posible que el enlace que seleccionaste esté dañado o que se haya eliminado la página."});
+		res.render('pages/error', {tema: res.locals.layout, texto: "Es posible que el enlace que seleccionaste esté dañado o que se haya eliminado la página."});
 	});
 })

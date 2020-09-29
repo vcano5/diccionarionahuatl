@@ -1,6 +1,7 @@
-<nav class="navbar navbar-light bg-light fixed-top" id="bar">
+<nav class="navbar navbar-<%=tema.bg%> bg-<%=tema.bg%> fixed-top" id="bar">
       <a href="/" class="navbar-brand"><img src="https://image.flaticon.com/icons/svg/207/207127.svg" width="30"> NAHUATL
 			</a>
+			
       <form action="/busqueda" method="GET" id="bsq">
         <div class="input-group" style="width: 50vw;">
           <input class="form-control pr-sm-1 w-70" id="inputbusqueda" name="busqueda" type="search" placeholder="Buscar" required>
@@ -9,6 +10,7 @@
           <a href="/configuracion" class="btn btn-outline-secondary ml-sm-1"><i class="fa fa-cog" aria-hidden="true"></i></a>
         </div>
       </form>
+
 </nav>
 
 
@@ -19,7 +21,7 @@
 	}
 </style>
 
-<nav class="navbar fixed-bottom navbar-sm bg-light navbar-light" id="baja" style="background-color: #232526; border-top: 0.3px solid rgba(211, 211, 211, 0.3)">
+<nav class="navbar fixed-bottom navbar-sm bg-<%=tema.bg%> navbar-<%=tema.bg%>" id="baja" style="background-color: #232526; border-top: 0.3px solid rgba(211, 211, 211, 0.3)">
 	
 			<button class="btn btn-info btn-lg btn-block w-auto d-flex justify-content-center" id="formulario" onclick="location.href = '/formulario'"><i class="fa fa-plus" aria-hidden="tr ue"> </i> </button>
 

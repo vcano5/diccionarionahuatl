@@ -13,7 +13,7 @@
 <header>
     <%- include ('../partials/header') -%>
 </header>
-<body class="text-white">
+<body class="text-<%=tema.texto%>">
   <div class="container"> <%if(mensaje){%>
     <br>
 <div class="alert alert-success" role="alert">
@@ -25,8 +25,8 @@
 <br>
 
 
-<div class="table-responsive text-white">
-  <table class="table table-borderless text-white">
+<div class="table-responsive text-<%=tema.texto%>">
+  <table class="table table-borderless text-<%=tema.texto%>">
     <thead>
       <tr >
         <th scope="col" ><h1><%=palabra.frase%></h1>

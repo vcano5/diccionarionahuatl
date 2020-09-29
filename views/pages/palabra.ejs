@@ -14,15 +14,15 @@
     <%- include ('../partials/header') -%>
 </header>
 <body>
-  <div class="container text-dark"> 
+  <div class="container text-<%=tema.textod%>"> 
 <br>
 
 
 <div class="table-responsive">
-  <table class="table table-borderless text-dark">
+  <table class="table table-borderless text-<%=tema.textod%>">
     <thead>
       <tr >
-        <th scope="col" ><h1><%=palabra.espanol%><h4 class="display-4 text-dark" style="font-size: 16px">PALABRA</h4></h1></th>
+        <th scope="col" ><h1><%=palabra.espanol%><h4 class="display-4 text-<%=tema.textod%>" style="font-size: 16px">PALABRA</h4></h1></th>
       </tr>
     </thead>
     <tbody>

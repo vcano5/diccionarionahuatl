@@ -6,12 +6,12 @@
 
 </head>
 <%- include ('../partials/header.ejs') -%>
-<body class="text-light">
+<body class="text-<%=tema.texto%>">
 	<br>
-<p class="text-light display-4 text-break" style="text-align: center; font-size: 11vw">
+<p class="text-<%=tema.textod%> display-4 text-break" style="text-align: center; font-size: 11vw">
 	
 				<%=user.nombre%><%=user.name%><% if(user.esAdmin == 1) { %>
-				<span class="lead bg-danger p-2 text-light">Admin</span>
+				<span class="lead bg-danger p-2 text-<%=tema.texto%>">Admin</span>
 
 			 	<%} %></p>
 	<div class="wrapper">
@@ -26,8 +26,8 @@
 <div class="pb-4">
 			
 			 	
-				<p>Equipo: <a href="/equipo?equipo=<%=user.equipo%>"><%=user.equipo%></a></p>
-				<p>Matricula: <%=texto%></p>
+				<p class="text-<%=tema.textod%>">Equipo: <a href="/equipo?equipo=<%=user.equipo%>"><%=user.equipo%></a></p>
+				<p class="text-<%=tema.textod%>">Matricula: <%=texto%></p>
 
 				<%if(matricula === true) { %>
 					<a href="/modificarPerfil"><button class="btn btn-warning"><i class="fa fa-key" aria-hidden="true"></i>
