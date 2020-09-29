@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <%- include ('../partials/head') -%>
+  <style type="text/css">
+    body {
+        padding-top: 0.1rem;
+        padding-bottom: 0.5rem;
+    }
+.login-form
+{
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+  </style>
+</head>
+<body class="bg-white">
+    
+
+   
+
+    <div class="container jumbotron my-4" style="background-color: transparent;">
+
+        <div class="row justify-content-center">
+
+            <div class="col-md-8">
+                <div class="card px-3">
+                    <div class="text-center">
+                    <h1 class="display-4" style="color: gray"> NAHUATL</h1>
+                    <img class="img-fluid" src="https://image.flaticon.com/icons/svg/207/207127.svg" width="20%" alt="Icon made by smashicons from www.flaticon.com"> 
+                    </div>
+                    <hr style="border-color: lightgray;">
+                    
+                    <div class="card-body">
+
+                        <% if(tipo == "registro") {%>
+                        
+                        <h2 class="display-4" style="font-size: 1.5em"> Enviamos un correo para enlazarlo a tu cuenta.</h2>
+                        <br>
+
+                        <p class="text-muted">Si tienes problemas para encontrarlo revisa la carpeta SPAM</p>
+                        <%} else {%>
+                        <h2 class="display-4" style="font-size: 1.5em"> Enviamos un correo para recuperar tu contraseña</h2>
+                        <br>
+                        <p>Si tienes problemas para encontrarlo revisa la carpeta SPAM</p>
+                        <% } %>
+  
+                    </div>
+                    <a href="/" class="btn btn-secondary">Pagina principal</a>
+
+                     
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    </div>
+
+
+
+</body>
+</html>

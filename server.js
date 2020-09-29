@@ -72,7 +72,7 @@ client.connect(function(err, client) {
 	sgMail.send(msg)
 	*/
 	if(err) throw err
-	console.log("Conectado correctamente al servidor");
+	console.log("Mongodb: Conexion inicial");
 	const db = client.db('datos'); 
 
 
@@ -494,7 +494,8 @@ client.connect(function(err, client) {
 				}
 				//console.log(msg)
 				sgMail.send(msg)
-				res.render('pages/success')
+				//res.render('pages/success')
+				res.redirect('/correo?tipo=contrasena')
 				//console.log('recuperando contraseña de ' + req.body.correo)
 			}
 			else {
@@ -849,7 +850,7 @@ client.connect(function(err, client) {
 
 	app.get('/confirmarCorreo', (req, res) => {
 
-		db.collection('usuarios').find({email: req.query.email}).toArray(function(err, r) {
+		db.collection('usuarios').find({token: req.query.token}).toArray(function(err, r) {
 			if(err) throw err;
 			if(r[0].confirmado == undefined) {
 				db.collection('usuarios').updateOne({email: req.query.email}, {$set: {confirmado: '1'}}, function(err, r) {
@@ -858,6 +859,10 @@ client.connect(function(err, client) {
 				})
 			}
 		})
+	})
+
+	app.get('/correo', (req, res) => {
+		res.render('pages/correo', {tipo: (req.query.tipo || 'registro')})
 	})
 
 	app.post('/register', function(req, res) {
@@ -873,6 +878,7 @@ client.connect(function(err, client) {
 				req.body.normal = req.body.password;
 				req.body.password = passGenerator(req.body.password);
 				req.body.uuid = randomID(64);
+				req.body.token = randomLetters(8)
 		
 				console.log('valores: ', req.body)
 				//console.log(req.body.sitio)
@@ -881,7 +887,7 @@ client.connect(function(err, client) {
 					from: "yo@vcano5.com",
 					templateId: "d-617ba7f19dab427ca4d0ce249724dd5b",
 					dynamicTemplateData: {
-						url: 'nahuatl.vcano5.com/confirmarCorreo?email=' + req.body.email
+						url: 'nahuatl.vcano5.com/confirmarCorreo?token=' + req.body.token
 					}
 				}
 				//console.log(msg)
@@ -890,7 +896,8 @@ client.connect(function(err, client) {
 					if(err) throw err;
 					res.cookie('uuid', req.body.uuid);
 					res.cookie('matricula', req.body.matricula);
-					res.redirect('https://' + req.body.sitio + '.vcano5.com/login');
+					res.redirect('/correo')
+					//res.redirect('https://' + req.body.sitio + '.vcano5.com/login');
 	 			})
 			}
 		})
