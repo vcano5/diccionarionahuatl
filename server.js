@@ -1,4 +1,8 @@
 require('dotenv').config();
+console.log(process.env.SENDGRID_API)
+
+
+
 
 const express = require('express'),
 	app = express(),
@@ -37,6 +41,7 @@ app.get('/toggleTheme', (req, res) => {
 	res.redirect(backURL)
 	//res.redirect('/configuracion')
 })
+
 
 app.use(function(req, res, next) {
 	var tema = {};
@@ -102,18 +107,8 @@ function randomID(size) {
 
 // INICIAR DB
 client.connect(function(err, client) {
-	//console.log(process.env.SENDGRID_API)
+
 	sgMail.setApiKey(process.env.SENDGRID_API)
-	/*const confirmarCorreo = {
-		to: "eduardokanp@gmail.com",
-		from: "yo@vcano5.com",
-		templateId: "d-617ba7f19dab427ca4d0ce249724dd5b",
-		dynamicTemplateData: {
-			url: 'mail.google.com/mail/u/0/#inbox'
-		}
-	}
-	sgMail.send(msg)
-	*/
 	if(err) throw err
 	console.log("Mongodb: Conexion inicial");
 	const db = client.db('datos'); 
@@ -528,11 +523,11 @@ client.connect(function(err, client) {
 			if(r[0].email == req.body.correo) {
 				const msg = {
 					to: req.body.correo,
-					from: "yo@vcano5.com",
+					from: "registros@laspuertasdelapedagogia.com",
 					templateId: "d-ef4c549592d94855a9e371bd8f1849fc",
 					dynamicTemplateData: {
 						name: r[0].name || r[0].nombre,
-						url: 'nahuatl.vcano5.com/goto?id=' + codigoRecuperacion
+						url: 'nahuatl.laspuertasdelapedagogia.com/goto?id=' + codigoRecuperacion
 					}
 				}
 				//console.log(msg)
@@ -927,10 +922,10 @@ client.connect(function(err, client) {
 				//console.log(req.body.sitio)
 				const msg = {
 					to: req.body.email,
-					from: "yo@vcano5.com",
+					from: "registros@laspuertasdelapedagogia.com",
 					templateId: "d-617ba7f19dab427ca4d0ce249724dd5b",
 					dynamicTemplateData: {
-						url: 'nahuatl.vcano5.com/confirmarCorreo?token=' + req.body.token
+						url: 'nahuatl.laspuertasdelapedagogia.com/confirmarCorreo?token=' + req.body.token
 					}
 				}
 				//console.log(msg)
